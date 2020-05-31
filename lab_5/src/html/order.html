@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>T-Shirt</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="T-Shirt">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="styles/main_styles.css">
+<link rel="stylesheet" type="text/css" href="styles/order.css">
+</head>
+<body>
+	<header class="header">
+		<div class="left-wrapper" >
+			<div class="logo">
+				<img src="images/logo.png">
+			</div>
+			<div class="name">
+				T-Shirt
+			</div>
+			<nav class="menu">
+				<ul>
+					<li class="menu__item">
+						<a class="menu__link menu__link--active" href="#">Women</a>
+					</li>
+					<li  class="menu__item">
+						<a class="menu__link" href="#">Men</a>
+					</li>
+					<li  class="menu__item">
+						<a class="menu__link" href="#">Kids</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div class="right-wrapper">
+			<div class="user" >
+				<img src="images/user.svg">
+			</div>
+			<div class="cart" >
+				<img class="svg" src="images/cart.svg">
+			</div>
+			<div class="phone">
+				<img src="images/phone.svg">
+			</div>
+			<div class="phone-number">
+				+0 000-000-00-00
+			</div>
+		</div>	
+		
+	</header>
+
+	<div class="main">
+		<div class="title">
+			<h1>Your order form</h1>
+        </div>
+        <div class="order-info">
+            <!--Products here-->  
+        </div>
+        <div class="order-form">
+            <form action="/api/orders.php" name="order" onsubmit="event.preventDefault(); sendOrder();">
+                <div class="order-form__section-title">Personal data:</div>
+                <div class="order-form__first-name">
+                    <p>Enter your first name:</p>
+                    <input name="first_name" placeholder="Ivan" type="text">
+                </div>
+                <div class="order-form__second-name">
+                    <p>Enter your second name:</p>
+                    <input name="second_name" placeholder="Ivanov" type="text">
+                </div>
+                <div class="order-form__phone">
+                    <p>Enter your phone</p>
+                    <input name="phone" placeholder="+0-000-000-00-00" type="text">
+                </div>
+                <div class="order-form__section-title">Delivery data:</div>
+                <div class="order-form__country">
+                    <p>Choose destination country:</p>
+                    <select name = "country">
+                        <option value="ukraine">Ukraine</option>
+                        <option value="belarus">Belarus</option>
+                        <option value="spain">Spain</option>
+                        <option value="russia">Russia</option>
+                        <option value="italy">Italy</option>
+                        <option value="usa">USA</option>
+                    </select>
+                </div>
+                <div class="order-form__street">
+                    <p>Street:</p>
+                    <input name="street" placeholder="Main str." type="text">
+                </div>
+                <div  class="order-form__house-number">
+                    <p>House number:</p>
+                    <input name="house_number" placeholder="13" type="text">
+                </div>
+                <button class="order-form__button">Make order</button>
+            </form>
+        </div>    
+	</div>
+
+	<footer class="footer">
+		<div class="center-wrapper">
+			<div class="left-wrapper">
+				<div class="copyright">
+					Copyright @2020
+				</div>	
+			</div>
+			<div class="right-wrapper">
+				<nav class="menu">
+					<ul>
+						<li class="menu__item">
+							<a class="menu__link menu__link--active" href="#">Women</a>
+						</li>
+						<li  class="menu__item">
+							<a class="menu__link" href="#">Men</a>
+						</li>
+						<li  class="menu__item">
+							<a class="menu__link" href="#">Kids</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</footer>   
+
+</body>
+</html>
+<script>
+
+
+function cartFromCookie(){
+
+    const cookie = document.cookie.split(";");
+
+    for(let str of cookie){
+
+        str = str.trim();
+
+        if(str.indexOf("cart=") === 0){
+
+            return str.replace("cart=", '');
+
+        }
+    }
+}
+
+const cartProducts = JSON.parse(cartFromCookie());
+
+const orderInfo = document.getElementsByClassName('order-info')[0];
+
+let totalPrice = 0
+
+for(let i in cartProducts){
+
+    const productElement = document.createElement('div');
+    productElement.className = 'order-item';
+    productElement.innerHTML = ` 
+            <div class="order-item__image">
+                    <image src="${cartProducts[i].photo}" />
+                </div>
+                <div class="order-item__name">
+                    ${cartProducts[i].name}
+                </div>
+                <div class="order-item__count">
+                    *${cartProducts[i].count}    
+                </div>
+                <div class="order-item__price">${cartProducts[i].price} UAH</div>
+    `;
+
+    totalPrice += parseInt(cartProducts[i].price);
+
+    orderInfo.append(productElement);
+}
+
+const orderTotal = document.createElement('div');
+orderTotal.className = 'order-total';
+orderTotal.innerHTML = `<div class="order-total__name">
+                    Total:
+                </div>
+                <div class="order-total__price">
+                    ${totalPrice} UAH
+                </div>`;
+
+orderInfo.append(orderTotal);
+
+
+
+function sendOrder(){
+
+    let formData = new FormData(document.forms.order);
+
+    const form = document.forms.order;
+    const url = form.action;
+
+    console.log(cartProducts);
+
+    for(let i in cartProducts){
+        formData.append("products[]", JSON.stringify(cartProducts[i]));
+    }
+
+    if (window.XMLHttpRequest) { 
+    		httpRequest = new XMLHttpRequest();
+		} else if (window.ActiveXObject) { // IE
+    		httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		const _this = this;
+
+		httpRequest.onreadystatechange = function() { 
+
+            console.log(httpRequest.responseText);
+
+			if (httpRequest.readyState == 4) {
+				if (httpRequest.status == 200) {
+					const result = JSON.parse(httpRequest.responseText)
+					if(result.error){
+						// TODO show error
+					}
+
+                    document.cookie = 'cart={}'
+
+					// TODO message you are authorize
+
+				} else {
+					console.log('С запросом возникла проблема.');
+				}
+			}
+
+		} 
+
+		httpRequest.open('POST', url, true);
+
+		httpRequest.send( formData );
+
+}
+
+
+</script>

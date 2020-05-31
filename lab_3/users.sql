@@ -1,0 +1,13 @@
+USE users;
+
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(64) NOT NULL,
+    phone VARCHAR(255) NOT NULL,
+    name VARCHAR(50), 
+    shop_id INT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uc_users_email UNIQUE (email),
+    CONSTRAINT uc_users_phone UNIQUE (phone)
+)  ENGINE=INNODB;

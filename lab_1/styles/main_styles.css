@@ -1,0 +1,192 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+/***********
+1. Fonts
+***********/
+
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+@font-face
+{
+	font-family: 'Futura';
+	src: url('../fonts/FuturaLT-Book.ttf')  format('truetype');
+}
+
+*
+{
+	margin: 0;
+	padding: 0;
+}
+body
+{
+	font-family: 'Roboto', sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+	background: #FFFFFF;
+	color:#2e2e2e;
+}
+div
+{
+	padding: 0;
+	margin: 0;
+	display: block;
+	/* position: relative; */
+}
+ul
+{
+	margin-bottom: 0px;
+}
+a
+{
+	color:#2e2e2e;
+}
+
+img
+{
+	max-width: 100%;
+}
+
+/***********
+1. Header
+***********/
+
+.header{
+	position: fixed; 
+	height: 75px; 
+	width: 100%; 
+	background-color: white; 
+	z-index: 10; 
+	border-bottom: 5px solid #2fce98;
+}
+
+.left-wrapper {
+	position: absolute; 
+	left: 0px;
+}
+
+.right-wrapper{
+	position: absolute; 
+	right: 0px;
+}
+
+.logo{
+	width: 55px; 
+	float: left; 
+	margin-left: 10px; 
+	padding: 10px;
+}
+
+.name {
+	display: flex; 
+	align-items: center; 
+	height: 75px; 
+	float: left; 
+	margin-left: 10px; 
+	font-size: 35px;
+}
+
+.menu {
+	display: flex; 
+	align-items: center; 
+	height: 75px; 
+	float: left; 
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.menu__item{
+	display: inline; 
+	margin-left: 11px;
+}
+
+.menu__link{
+	font-size: 20px;
+}
+
+.menu__link--active{
+	color: #2fce98;
+}
+
+
+.user{
+	width: 55px; 
+	float: left; 
+	padding:10px; 
+}
+
+.cart { 
+	width: 55px; 
+	float: left; 
+	padding:10px; 
+	/* margin-right: 10px; */
+}
+
+.phone{ 
+	width: 55px; 
+	float: left; 
+	padding: 10px; 
+	margin-right: 10px;
+}
+
+.phone-number {
+	position: relative; 
+	display: flex; 
+	align-items: center; 
+	height: 75px; 
+	width: 150px; 
+	float: left; 
+	font-size: 17px; 
+	margin-right: 10px;
+}
+
+.main{
+	top: 75px;
+	margin: auto; 
+	max-width: 1140px;
+	font-size: 0;
+	padding-top: 75px;
+}
+
+.title{
+	font-size: 30px;
+	color: rgb(66, 62, 62);
+	margin: 10px; 
+	height: 75px;
+}
+
+.footer {
+	border-top: 5px solid #2fce98;
+	position: static; 
+	height: 75px; 
+	width: 100%; 
+	background-color: #FFFFFF
+}
+
+.center-wrapper{
+	position: relative; 
+	max-width: 1140px; 
+	margin: auto; 
+}
+
+.copyright {
+	padding-left: 10px; 
+	display: flex; 
+	align-items: center; 
+	height: 75px;
+}
+
+@media screen and (max-width: 800px) {
+	.phone{
+		display: none;
+	}
+	.phone-number {
+		display: none;
+	}
+	.logo{
+		display: none;
+	}
+	.name{
+		display: none;
+	}
+}

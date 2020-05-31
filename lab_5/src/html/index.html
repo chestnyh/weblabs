@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>T-Shirt</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="T-Shirt">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="styles/main_styles.css">
+<link rel="stylesheet" type="text/css" href="styles/product.css">
+</head>
+<body>
+	<header class="header">
+		<div class="left-wrapper" >
+			<div class="logo">
+				<img src="images/logo.png">
+			</div>
+			<div class="name">
+				T-Shirt
+			</div>
+			<nav class="menu">
+				<ul>
+					<li class="menu__item">
+						<a class="menu__link menu__link--active" href="#">Women</a>
+					</li>
+					<li  class="menu__item">
+						<a class="menu__link" href="#">Men</a>
+					</li>
+					<li  class="menu__item">
+						<a class="menu__link" href="#">Kids</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+		<div class="right-wrapper">
+			<div class="user" onclick="showModal('auth-popup-wrapper')">
+				<img src="images/user.svg">
+			</div>
+			<div class="cart" onclick="showModal('cart-popup-wrapper')">
+				<img class="svg" src="images/cart.svg" />
+			</div>
+			<div class="phone">
+				<img src="images/phone.svg">
+			</div>
+			<div class="phone-number">
+				+0 000-000-00-00
+			</div>
+		</div>
+	</header>
+	<div class="main">
+			<div class="title">
+				<h1>Products</h1>
+			</div>
+
+			<!--Products here-->
+	</div>
+
+	<footer class="footer">
+		<div class="center-wrapper">
+			<div class="left-wrapper">
+				<div class="copyright">
+					Copyright @2020
+				</div>	
+			</div>
+			<div class="right-wrapper">
+				<nav class="menu">
+					<ul>
+						<li class="menu__item">
+							<a class="menu__link menu__link--active" href="#">Women</a>
+						</li>
+						<li  class="menu__item">
+							<a class="menu__link" href="#">Men</a>
+						</li>
+						<li  class="menu__item">
+							<a class="menu__link" href="#">Kids</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</footer>	
+	<div class="popup-wrapper" id="cart-popup-wrapper">
+		<div class="popup">
+			<div class="popup__close"></div>
+			<div class="popup__title">
+				Cart
+			</div>
+			<div class="popup-cart">
+				
+			</div>
+		</div>
+	</div>
+	<div class="popup-wrapper" id="auth-popup-wrapper">
+		<div class="popup">
+			<div class="popup__close"></div>
+			<div class="popup__title">
+				Auth form
+			</div>
+			<form method="POST", action="/api/auth.php" name="auth" onsubmit="event.preventDefault(); authorizeUser(this)">
+			<div class="popup__input">
+				<input placeholder="email" type="email" name="email" id="auth-email">
+			</div>
+			<div class="popup__input">
+				<input placeholder="your pass" type="password" name="password" id="auth-password">
+			</div>
+			<button class="popup__button">
+				Auth
+			</button>
+			</form>
+		</div>
+	</div>
+</body>
+</html>
+
+<script>
+	// Show modal 
+	function showModal(modalId){
+
+		const modal = document.getElementById(modalId);
+
+		modal.classList.add("show");
+
+		const close = modal.getElementsByClassName('popup__close')[0];
+		close.onclick = () => {
+			modal.classList.remove("show");
+		}
+
+	}
+
+	//--------------------------------Auth-----------------------------------
+
+	function authorizeUser(form){
+
+		let formData = new FormData(document.forms.auth);
+
+		const url = form.action;
+
+		var httpRequest;
+
+		if (window.XMLHttpRequest) { 
+    		httpRequest = new XMLHttpRequest();
+		} else if (window.ActiveXObject) { // IE
+    		httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+		}
+
+		const _this = this;
+
+		httpRequest.onreadystatechange = function() { 
+
+			if (httpRequest.readyState == 4) {
+				if (httpRequest.status == 200) {
+					const result = JSON.parse(httpRequest.responseText)
+					if(result.error){
+						// TODO show error
+					}
+
+				} else {
+					console.log('С запросом возникла проблема.');
+				}
+			}
+
+		} 
+
+		httpRequest.open('POST', url, true);
+
+		httpRequest.send( formData );
+
+	}
+
+	///------------------------------------------------------------------------
+
+	function mapToObj(map){
+
+		let obj = {};
+
+		map.forEach((item, id) => {
+			obj[id] = {...item};
+		})
+
+		return obj;
+	}
+
+	function stringToMap(str){
+
+		const obj = JSON.parse(str);
+
+		const res = new Map();
+
+		for(let i in obj){
+			res.set(i, {...obj[i]});
+		}
+
+		return res;
+
+	}
+
+	function cartFromCookie(){
+
+		const cookie = document.cookie.split(";");
+
+		for(let str of cookie){
+
+			str = str.trim();
+
+			if(str.indexOf("cart=") === 0){
+				
+				return str.replace("cart=", '');
+
+			}
+		}
+	}
+
+
+	class Cart {
+
+		constructor(products){
+			this.cartItems = new Map();
+			if(products){
+				this.products = products.productsItems;
+			}
+		}
+
+		setCartItems(){
+
+			this.cartItems = stringToMap(
+				cartFromCookie()
+			);
+
+		}
+
+
+		createCartItems(){
+
+			const cartWrapper = document.getElementsByClassName('popup-cart')[0];
+
+			let summary = 0;
+			let count = 0;
+
+			this.cartItems.forEach(element => {
+
+				const fullPrice = element.price*element.count;
+
+				summary += fullPrice;
+				count += element.count;
+
+				const product = document.createElement('div');
+				product.className = "popup-cart__item";
+				product.innerHTML = `
+						<div class="popup-cart__image">
+							<img src="${element.photo}">
+						</div>
+						<div class="popup-cart__title">
+							<div>
+								${element.name}
+							</div>	 
+						</div>
+						<div class="popup-cart__count">
+							<div>${element.count}</div>
+						</div>
+						<div class="popup-cart__price">
+							<div>${Math.round(fullPrice*100)/100} UAH</div>
+						</div>`;
+					
+				cartWrapper.append(product);		
+
+			});
+
+			const summaryEl = document.createElement('div');
+			summaryEl.className = "popup-cart__total";
+			summaryEl.innerHTML = `
+				<div class="popup-cart__total-title">
+					Summary:
+				</div>
+				<div class="popup-cart__total-price">
+					${Math.round(summary*100)/100} UAH
+				</div>`;
+
+			cartWrapper.append(summaryEl);
+
+			console.log(document.getElementsByClassName('popup__button')[0])
+
+			if(this.cartItems.size > 0 && !document.getElementById('order_button')){
+
+				const cartButton = document.createElement('button');
+				cartButton.className = "popup__button";
+				cartButton.id="order_button"
+				cartButton.onclick = function(){return location.href = '/order.html'};
+				cartButton.innerHTML = "Make order";
+				cartWrapper.after(cartButton);
+				
+			}
+
+
+		}
+
+		deleteCartItems(){
+			const cartWrapper = document.getElementsByClassName('popup-cart')[0];
+			cartWrapper.innerHTML = '';
+		}
+
+		addToCart(id){
+
+			id = id.toString();
+
+			const product = this.products.get(id);
+
+			if(this.cartItems.has(id)){
+				this.cartItems.get(id).count += 1;
+			}
+			else{
+				this.cartItems.set(id, {...product, count: 1})
+			}
+
+			this.deleteCartItems();
+
+			this.createCartItems();
+
+			document.cookie = `cart=${JSON.stringify(mapToObj(this.cartItems))}`;
+
+		}
+
+	}
+
+
+	class Products {
+
+		constructor(){
+			this._productsItems = new Map();
+		}
+
+		get productsItems() {
+			return this._productsItems;
+		}
+
+		setProducts(){
+		
+			var httpRequest;
+
+			if (window.XMLHttpRequest) { 
+    			httpRequest = new XMLHttpRequest();
+			} else if (window.ActiveXObject) { // IE
+    			httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+
+			const _this = this;
+
+			httpRequest.onreadystatechange = function() { 
+
+				if (httpRequest.readyState == 4) {
+					if (httpRequest.status == 200) {
+						const result = JSON.parse(httpRequest.responseText)
+						if(result.error){
+							// TODO show error
+						}
+
+						result.data.forEach(product => {
+							_this._productsItems.set(product.id.toString(), {...product}); 
+						})
+
+						_this.createProductItems(result.data);
+
+						console.log(result);
+					} else {
+						console.log('С запросом возникла проблема.');
+					}
+				}
+
+			} 
+
+			httpRequest.open('GET', 'http://localhost/api/products.php', true);
+
+			httpRequest.send()
+		
+		}
+
+		createProductItems(){
+
+			const productWrapper = document.getElementsByClassName('main')[0];
+
+			this._productsItems.forEach(element => {
+			
+				const stringEl = JSON.stringify(element);
+			
+				const product = document.createElement('div');
+				product.className = "product";
+				product.innerHTML = `<label>
+				<input type="checkbox">
+					<div class="product__image">
+						<img src="${element.photo}" >
+					</div>
+					<span class="product__title">
+						${element.name}
+					</span>
+					<span class="product__price">${element.price} UAH</span>
+					<div class="product__description">${element.description}</div>
+					<button class="product__buy-button" onclick="cart.addToCart(${element.id})">Buy button</button>
+				</label>`;
+			
+				productWrapper.append(product);		
+			
+			});
+
+		}
+
+	}
+
+
+	const products = new Products();
+	products.setProducts();
+	products.createProductItems();
+
+
+	const cart = new Cart(products)
+	cart.setCartItems();
+	cart.createCartItems();
+
+</script>
